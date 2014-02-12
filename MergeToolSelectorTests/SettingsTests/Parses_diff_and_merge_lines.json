@@ -1,0 +1,10 @@
+﻿{
+	"FileExtensions": [
+		{
+			"FileExt": "cs",
+			"Command": "c:\\Program Files (x86)\\Merge thingy\\merge.exe",
+			"DiffArguments": "command line",
+			"MergeArguments": "merge command line",
+		},
+	],
+}

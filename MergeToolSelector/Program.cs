@@ -6,10 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MergeToolSelector.FileExtensions;
+using MergeToolSelector.Settings;
 
 namespace MergeToolSelector
 {
-    internal class Program
+    public class Program
     {
         private static string BeyondCompare
         {
@@ -38,8 +40,32 @@ namespace MergeToolSelector
                     {".dpj", "java"}
                 };
 
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            DebugArgs(args);
+            ProcessStartInfo processStartInfo;
+
+            var fileEx = GetFileExtension(args[1], args[2]);
+            if (string.Equals(args[0], "diff"))
+            {
+                var diffArguments = fileEx.GetEffectiveDiffArguments(args[1], args[2], args[3], args[4]);
+                processStartInfo = new ProcessStartInfo(fileEx.Command)
+                {
+                    Arguments = diffArguments,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = true,
+                    WorkingDirectory = Environment.CurrentDirectory,
+                };
+
+                using (var p = Process.Start(processStartInfo))
+                {
+                    p.WaitForExit();
+                    Environment.Exit(p.ExitCode);
+                }
+            }
+
+
             DebugArgs(args);
             var argList = ((args.Count() == 4)
                                ? GetDiff(args)
@@ -58,7 +84,7 @@ namespace MergeToolSelector
                     argsAsString.Append(a);
             }
 
-            var processStartInfo = new ProcessStartInfo(argList[0])
+            processStartInfo = new ProcessStartInfo(argList[0])
                                        {
                                            Arguments = argsAsString.ToString(1, argsAsString.Length - 1),
                                            CreateNoWindow = true,
@@ -74,9 +100,33 @@ namespace MergeToolSelector
             }
         }
 
+        private static FileExtension GetFileExtension(params string[] paths)
+        {
+            var fileExtPersister = new FileExtensionPersister(new FileProvider());
+            var savedExtensions = fileExtPersister
+                .ReadFileExtensions()
+                .Where(x => File.Exists(x.Command))
+                .ToArray();
+
+            // match saved file extensions that exactly line up with one of the given extensions
+            var matchingExtension = savedExtensions.FirstOrDefault(x => x.IsForExtension(paths));
+            if (matchingExtension != null)
+                return matchingExtension;
+            
+            // match saved file extension if it is a fallback
+            matchingExtension = savedExtensions.FirstOrDefault(x => x.FileExt == null);
+            if (matchingExtension != null)
+                return matchingExtension;
+
+            // match any built in extensions, using the same rules
+            var builtInExtensions = BuiltInFileExtensions.FileExtensions.Where(x => File.Exists(x.Command)).ToArray();
+            return builtInExtensions.FirstOrDefault(x => x.IsForExtension(paths)) ?? builtInExtensions.FirstOrDefault(x => x.FileExt == null);
+        }
+
         private static void DebugArgs(IEnumerable<string> args)
         {
             var msg = args.Aggregate(new StringBuilder(), (builder, s) => builder.Append(s).AppendLine());
+            File.WriteAllText(@"c:\test.txt", msg.ToString());
             //MessageBox.Show(msg.ToString());
         }
 
@@ -183,5 +233,6 @@ namespace MergeToolSelector
             }
             return null;
         }
+
     }
 }
