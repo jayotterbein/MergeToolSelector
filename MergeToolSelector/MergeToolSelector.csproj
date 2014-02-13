@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MergeToolSelector</RootNamespace>
-    <AssemblyName>fake_sgdm</AssemblyName>
+    <AssemblyName>MergeToolSelector</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>MergeToolSelector.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -54,8 +54,10 @@
   <ItemGroup>
     <Compile Include="FileExtensions\BuiltInFileExtensions.cs" />
     <Compile Include="FileExtensions\FileExtension.cs" />
+    <Compile Include="FileExtensions\FileExtensionLocator.cs" />
     <Compile Include="Settings\FileExtensionPersister.cs" />
     <Compile Include="Settings\FileProvider.cs" />
+    <Compile Include="Settings\IFIleExtensionPersister.cs" />
     <Compile Include="Settings\IFileProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

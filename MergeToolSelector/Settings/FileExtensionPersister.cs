@@ -7,7 +7,7 @@ using NLog;
 
 namespace MergeToolSelector.Settings
 {
-    public class FileExtensionPersister
+    public class FileExtensionPersister : IFileExtensionPersister
     {
         private readonly IFileProvider _fileProvider;
         private readonly Logger _logger;
@@ -18,7 +18,7 @@ namespace MergeToolSelector.Settings
             _fileProvider = fileProvider;
         }
 
-        public IList<FileExtension> ReadFileExtensions()
+        public IList<FileExtension> LoadFileExtensions()
         {
             JToken fileExtensions;
             using (var stream = _fileProvider.GetFileExtensionsFile())

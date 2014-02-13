@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using MergeToolSelector.FileExtensions;
 using MergeToolSelector.Settings;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace MergeToolSelectorTests.SettingsTests
 {
@@ -21,7 +24,7 @@ namespace MergeToolSelectorTests.SettingsTests
                 {
                     new FileExtension
                     {
-                        FileExt = "cs",
+                        FileExts = new [] { "cs" },
                         Command = @"c:\Program Files (x86)\Merge thingy\merge.exe",
                         DiffArguments = @"command line",
                         MergeArguments = @"merge command line",
@@ -32,9 +35,34 @@ namespace MergeToolSelectorTests.SettingsTests
             fileProvider.Setup(x => x.GetFileExtensionsFile()).Returns(GetResource());
 
             var fileExtensionPersister = new FileExtensionPersister(fileProvider.Object);
-            var obtainedFileExtensions = fileExtensionPersister.ReadFileExtensions();
+            var obtainedFileExtensions = fileExtensionPersister.LoadFileExtensions();
             Assert.That(obtainedFileExtensions, Is.EquivalentTo(expectedFileExtensions).Using(new FileExtensionEqualityComparer()));
         }
+
+        [Test]
+        public void Load_prepends_period_to_fileext_without_one()
+        {
+            var fileProvider = new Mock<IFileProvider>();
+            fileProvider.Setup(x => x.GetFileExtensionsFile()).Returns(GetResource());
+
+            var fileExtensionPersister = new FileExtensionPersister(fileProvider.Object);
+            var obtainedFileExtensions = fileExtensionPersister.LoadFileExtensions();
+            Assert.That(obtainedFileExtensions, Has.Count.EqualTo(1));
+            Assert.That(obtainedFileExtensions[0], Has.Property("FileExts").EquivalentTo(new[] {".cs", ".other"}).Using((IComparer) StringComparer.OrdinalIgnoreCase));
+        }
+
+        [Test]
+        public void Load_does_not_prepend_period_to_fileext_with_one()
+        {
+            var fileProvider = new Mock<IFileProvider>();
+            fileProvider.Setup(x => x.GetFileExtensionsFile()).Returns(GetResource());
+
+            var fileExtensionPersister = new FileExtensionPersister(fileProvider.Object);
+            var obtainedFileExtensions = fileExtensionPersister.LoadFileExtensions();
+            Assert.That(obtainedFileExtensions, Has.Count.EqualTo(1));
+            Assert.That(obtainedFileExtensions[0], Has.Property("FileExts").EquivalentTo(new[] { ".cs", ".hasdot" }).Using((IComparer)StringComparer.OrdinalIgnoreCase));
+        }
+
 
         private static Stream GetResource([CallerMemberName]string resourceName = "")
         {
@@ -47,10 +75,18 @@ namespace MergeToolSelectorTests.SettingsTests
         {
             public bool Equals(FileExtension x, FileExtension y)
             {
-                return string.Equals(x.FileExt, y.FileExt, StringComparison.Ordinal)
+                return StringListEquals(x.FileExts, y.FileExts)
                        && string.Equals(x.Command, y.Command, StringComparison.Ordinal)
                        && string.Equals(x.DiffArguments, y.DiffArguments, StringComparison.Ordinal)
                        && string.Equals(x.MergeArguments, y.MergeArguments, StringComparison.Ordinal);
+            }
+
+            static private bool StringListEquals(IList<string> list1, IList<string> list2)
+            {
+                if (list1 == null)
+                    return list2 == null;
+
+                return list1.All(list2.Contains) && list2.All(list1.Contains);
             }
 
             public int GetHashCode(FileExtension obj)

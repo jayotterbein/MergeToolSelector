@@ -45,12 +45,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileExtensionsTests\FileExtensionLocatorTests.cs" />
+    <Compile Include="FileExtensionsTests\FileExtensionTests.cs" />
     <Compile Include="SettingsTests\FileExtensionPersisterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <EmbeddedResource Include="SettingsTests\Parses_diff_and_merge_lines.json" />
+    <EmbeddedResource Include="SettingsTests\Load_prepends_period_to_fileext_without_one.json" />
+    <EmbeddedResource Include="SettingsTests\Load_does_not_prepend_period_to_fileext_with_one.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MergeToolSelector\MergeToolSelector.csproj">
@@ -58,6 +62,7 @@
       <Name>MergeToolSelector</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

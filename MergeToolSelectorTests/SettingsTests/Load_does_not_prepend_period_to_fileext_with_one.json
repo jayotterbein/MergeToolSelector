@@ -1,7 +1,7 @@
 ﻿{
 	"FileExtensions": [
 		{
-			"FileExts": [ "cs" ],
+			"FileExts": [ ".cs", ".hasDot" ],
 			"Command": "c:\\Program Files (x86)\\Merge thingy\\merge.exe",
 			"DiffArguments": "command line",
 			"MergeArguments": "merge command line",
