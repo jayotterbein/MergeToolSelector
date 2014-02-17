@@ -20,8 +20,8 @@ namespace MergeToolSelector.FileExtensions
                 yield return new FileExtension
                              {
                                  Command = beyondCompare,
-                                 DiffArguments = @"""$leftPath"" ""$rightPath"" /nobackups /leftreadonly /solo ""/lefttitle=$leftLabel"" ""/righttitle=$rightLabel""",
-                                 MergeArguments = @"""$leftPath"" ""$rightPath"" ""$centerPath"" ""$destPath"" /nobackups /leftreadonly /rightreadonly /solo ""/lefttitle=$leftLabel"" ""/righttitle=$rightLabel"" ""/centertitle=$centerLabel"" /outputtitle=""$destLabel""",
+                                 DiffArguments = @"""$1"" ""$2"" /nobackups /leftreadonly /solo ""/lefttitle=$3"" ""/righttitle=$4""",
+                                 MergeArguments = @"""$1"" ""$2"" ""$3"" ""$4"" /nobackups /leftreadonly /rightreadonly /solo ""/lefttitle=$5"" ""/righttitle=$6"" ""/centertitle=$7"" /outputtitle=""$8""",
                              };
             }
 
@@ -33,15 +33,15 @@ namespace MergeToolSelector.FileExtensions
                                            {
                                                FileExts = new [] { "cs", "vb", "java", "dpj", "c", "h" },
                                                Command = semanticMerge,
-                                               DiffArguments = @"""-sn=$leftLabel"" ""-dn=$rightLabel"" ""-s=$leftPath"" ""-d=$rightPath""",
-                                               MergeArguments = @"""-d=$rightPath"" ""-b=$leftPath"" ""-s=$centerPath"" ""-r=$destPath"" ""-dn=$rightLabel"" ""-sn=$leftLabel"" ""-bn=$destLabel""",
+                                               DiffArguments = @"""-sn=$3"" ""-dn=$4"" ""-s=$1"" ""-d=$2""",
+                                               MergeArguments = @"""-d=$2"" ""-b=$1"" ""-s=$3"" ""-r=$4"" ""-dn=$6"" ""-sn=$5"" ""-bn=$7""",
                                            };
                 // if beyond compare exists, use it as a default text diff/merge within semantic merge
                 if (File.Exists(beyondCompare))
                 {
-                    var edt = string.Format(@" ""-edt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$leftLabel: #sourcesymbolic"""" """"/righttitle=$rightLabel: #destinationsymbolic""""""", beyondCompare);
-                    var emt = string.Format(@" ""-emt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" """"#basefile"""" """"#output"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$leftLabel: #sourcesymbolic"""" """"/righttitle=$rightLabel: #destinationsymbolic"""" """"/centertitle=$centerLabel"""" """"/outputtitle=$destLabel""""""", beyondCompare);
-                    var e2mt = string.Format(@" ""-e2mt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" """"/mergeoutput=#output"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$leftLabel: #sourcesymbolic"""" """"/righttitle=$rightLabel: #destinationsymbolic"""" """"/outputtitle=$destLabel""""""", beyondCompare);
+                    var edt = string.Format(@" ""-edt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$3: #sourcesymbolic"""" """"/righttitle=$4: #destinationsymbolic""""""", beyondCompare);
+                    var emt = string.Format(@" ""-emt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" """"#basefile"""" """"#output"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$5: #sourcesymbolic"""" """"/righttitle=$6: #destinationsymbolic"""" """"/centertitle=$7"""" """"/outputtitle=$8""""""", beyondCompare);
+                    var e2mt = string.Format(@" ""-e2mt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" """"/mergeoutput=#output"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$5: #sourcesymbolic"""" """"/righttitle=$6: #destinationsymbolic"""" """"/outputtitle=$8""""""", beyondCompare);
                     
                     semanticMergeFileExt.DiffArguments = semanticMergeFileExt.DiffArguments + edt;
                     semanticMergeFileExt.MergeArguments = semanticMergeFileExt.MergeArguments + emt + e2mt;

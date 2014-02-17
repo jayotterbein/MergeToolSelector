@@ -75,5 +75,57 @@ namespace MergeToolSelectorTests.FileExtensionsTests
             var effectiveDiff = fileExtension.GetEffectiveDiffArguments(new [] { "diff", @"c:\left\path\file.ext", @"\\server\path\file.ext", "left label", "right label" });
             Assert.That(effectiveDiff, Is.EqualTo(@"diff arguments: right label \\server\path\file.ext c:\left\path\file.ext left label c:\left\path\file.ext"));
         }
+
+        [Test]
+        public void GetEffectiveDiffArguments_ignores_double_dollarsigns()
+        {
+            var fileExtension = new FileExtension
+            {
+                FileExts = null,
+                Command = "some.exe",
+                DiffArguments = "diff arguments: $1 $$1",
+            };
+            var effectiveDiff = fileExtension.GetEffectiveDiffArguments(new[] { "diff", "first" });
+            Assert.That(effectiveDiff, Is.EqualTo(@"diff arguments: first $1"));
+        }
+
+        [Test]
+        public void GetEffectiveDiffArguments_doesnt_replace_args_in_args()
+        {
+            var fileExtension = new FileExtension
+            {
+                FileExts = null,
+                Command = "some.exe",
+                DiffArguments = "diff arguments: $1 $2",
+            };
+            var effectiveDiff = fileExtension.GetEffectiveDiffArguments(new[] { "diff", "first-$2", "second" });
+            Assert.That(effectiveDiff, Is.EqualTo(@"diff arguments: first-$2 second"));
+        }
+
+        [Test]
+        public void GetEffectiveDiffArguments_ignores_dollarsign_followed_by_non_numeric()
+        {
+            var fileExtension = new FileExtension
+            {
+                FileExts = null,
+                Command = "some.exe",
+                DiffArguments = "diff arguments: $a $1 $$c",
+            };
+            var effectiveDiff = fileExtension.GetEffectiveDiffArguments(new[] { "diff", "first", "second", "third" });
+            Assert.That(effectiveDiff, Is.EqualTo(@"diff arguments: $a first $c"));
+        }
+
+        [Test]
+        public void GetEffectiveDiffArguments_blanks_non_existent_args()
+        {
+            var fileExtension = new FileExtension
+            {
+                FileExts = null,
+                Command = "some.exe",
+                DiffArguments = "diff arguments: $1 $100",
+            };
+            var effectiveDiff = fileExtension.GetEffectiveDiffArguments(new[] { "diff", "first", "second", "third" });
+            Assert.That(effectiveDiff, Is.EqualTo(@"diff arguments: first "));
+        }
     }
 }
