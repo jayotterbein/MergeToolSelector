@@ -70,10 +70,10 @@ namespace MergeToolSelectorTests.FileExtensionsTests
             {
                 FileExts = null,
                 Command = "some.exe",
-                DiffArguments = "diff arguments: $leftPath $rightPath $rightLabel $leftLabel",
+                DiffArguments = "diff arguments: $4 $2 $1 $3 $1",
             };
-            var effectiveDiff = fileExtension.GetEffectiveDiffArguments(@"c:\left\path\file.ext", @"\\server\path\file.ext", "left label", "right label");
-            Assert.That(effectiveDiff, Is.EqualTo(@"diff arguments: c:\left\path\file.ext \\server\path\file.ext right label left label"));
+            var effectiveDiff = fileExtension.GetEffectiveDiffArguments(new [] { "diff", @"c:\left\path\file.ext", @"\\server\path\file.ext", "left label", "right label" });
+            Assert.That(effectiveDiff, Is.EqualTo(@"diff arguments: right label \\server\path\file.ext c:\left\path\file.ext left label c:\left\path\file.ext"));
         }
     }
 }

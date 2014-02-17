@@ -23,27 +23,23 @@ namespace MergeToolSelector.FileExtensions
 
         public string MergeArguments { get; set; }
 
-        public string GetEffectiveDiffArguments(string leftPath, string rightPath, string leftLabel, string rightLabel)
+        public string GetEffectiveDiffArguments(IList<string> args)
         {
-            var ret = DiffArguments
-                .Replace("$leftPath", leftPath)
-                .Replace("$rightPath", rightPath)
-                .Replace("$leftLabel", leftLabel)
-                .Replace("$rightLabel", rightLabel);
-            return ret;
+            return ReplaceArgs(DiffArguments, args);
         }
 
-        public string GetEffectiveMergeArguments(string leftPath, string rightPath, string centerPath, string destPath, string leftLabel, string rightLabel, string centerLabel, string destLabel)
+        public string GetEffectiveMergeArguments(IList<string> args)
         {
-            var ret = MergeArguments
-                .Replace("$leftPath", leftPath)
-                .Replace("$rightPath", rightPath)
-                .Replace("$centerPath", centerPath)
-                .Replace("$destPath", destPath)
-                .Replace("$leftLabel", leftLabel)
-                .Replace("$rightLabel", rightLabel)
-                .Replace("$centerLabel", centerLabel)
-                .Replace("$destLabel", destLabel);
+            return ReplaceArgs(MergeArguments, args);
+        }
+
+        private static string ReplaceArgs(string str, IList<string> args)
+        {
+            var ret = str;
+            for (var i = 1; i < args.Count; i++)
+            {
+                ret = ret.Replace("$" + i, args[i]);
+            }
             return ret;
         }
 

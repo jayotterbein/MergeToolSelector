@@ -26,35 +26,18 @@ namespace MergeToolSelector
             }
             else if (string.Equals(args[0], "diff", StringComparison.OrdinalIgnoreCase))
             {
-                ExecuteDiff(args);
+                Exec((fileEx, argList) => fileEx.GetEffectiveDiffArguments(argList), args);
             }
             else if (string.Equals(args[0], "merge", StringComparison.OrdinalIgnoreCase))
             {
-                ExecuteMerge(args);
+                Exec((fileEx, argList) => fileEx.GetEffectiveMergeArguments(argList), args);
             }
         }
 
-        private static void ExecuteDiff(IList<string> args)
+        private static void Exec(Func<FileExtension, IList<string>, string> effectiveFunc, IList<string> args)
         {
-            if (args.Count() != 5)
-            {
-                MessageBox.Show("Unable to diff without the following arguments (in order):" + Environment.NewLine + "leftPath rightPath leftLabel rightLabel");
-                return;
-            }
-            var fileEx = GetFileExtension(args[1], args[2]);
-            var arguments = fileEx.GetEffectiveDiffArguments(args[1], args[2], args[3], args[4]);
-            StartProcess(fileEx.Command, arguments);
-        }
-
-        private static void ExecuteMerge(IList<string> args)
-        {
-            if (args.Count() != 9)
-            {
-                MessageBox.Show("Unable to merge without the following arguments (in order):" + Environment.NewLine + "leftPath rightPath centerPath destPath leftLabel rightLabel centerLabel destLabel");
-                return;
-            }
-            var fileEx = GetFileExtension(args[1], args[2], args[3], args[4]);
-            var arguments = fileEx.GetEffectiveMergeArguments(args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+            var fileEx = GetFileExtension(args);
+            var arguments = effectiveFunc(fileEx, args);
             StartProcess(fileEx.Command, arguments);
         }
 
@@ -76,11 +59,13 @@ namespace MergeToolSelector
             }
         }
 
-        private static FileExtension GetFileExtension(params string[] paths)
+        private static FileExtension GetFileExtension(IEnumerable<string> args)
         {
             var fileExtPersister = new FileExtensionPersister(new FileProvider());
             var fileExtensionLocator = new FileExtensionLocator(fileExtPersister, new BuiltInFileExtensions());
-            return fileExtensionLocator.GetFileExtension(paths);
+
+            var argsForPaths = args.Where(File.Exists).ToArray();
+            return fileExtensionLocator.GetFileExtension(argsForPaths);
         }
     }
 }
