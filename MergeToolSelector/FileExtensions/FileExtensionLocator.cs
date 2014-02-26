@@ -8,7 +8,7 @@ using MergeToolSelector.Settings;
 
 namespace MergeToolSelector.FileExtensions
 {
-    public class FileExtensionLocator
+    public class FileExtensionLocator : IFileExtensionLocator
     {
         private readonly IFileExtensionPersister _fileExtensionPersister;
         private readonly IFileExtensionPersister _builtInFileExtensionPersister;

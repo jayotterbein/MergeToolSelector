@@ -52,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileExtensions\IFileExtensionLocator.cs" />
+    <Compile Include="Utility\CommandLineParser.cs" />
     <Compile Include="FileExtensions\BuiltInFileExtensions.cs" />
     <Compile Include="FileExtensions\FileExtension.cs" />
     <Compile Include="FileExtensions\FileExtensionLocator.cs" />
@@ -61,6 +63,10 @@
     <Compile Include="Settings\IFileProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\IMessageDisplayer.cs" />
+    <Compile Include="Utility\IProcessExecuter.cs" />
+    <Compile Include="Utility\MessageDisplayer.cs" />
+    <Compile Include="Utility\ProcessExecuter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -72,6 +78,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

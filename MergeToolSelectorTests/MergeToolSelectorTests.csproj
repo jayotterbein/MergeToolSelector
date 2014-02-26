@@ -49,6 +49,7 @@
     <Compile Include="FileExtensionsTests\FileExtensionTests.cs" />
     <Compile Include="SettingsTests\FileExtensionPersisterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UtilityTests\CommandLineParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
