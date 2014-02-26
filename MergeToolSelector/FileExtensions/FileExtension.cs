@@ -13,24 +13,24 @@ namespace MergeToolSelector.FileExtensions
     {
         private IList<string> _fileExts;
 
-        public IList<string> FileExts
+        public virtual IList<string> FileExts
         {
             get { return _fileExts; }
             set { _fileExts = PrependPeriods(value); }
         }
 
-        public string Command { get; set; }
+        public virtual string Command { get; set; }
 
-        public string DiffArguments { get; set; }
+        public virtual string DiffArguments { get; set; }
 
-        public string MergeArguments { get; set; }
+        public virtual string MergeArguments { get; set; }
 
-        public string GetEffectiveDiffArguments(IList<string> args)
+        public virtual string GetEffectiveDiffArguments(IList<string> args)
         {
             return ReplaceArgs(DiffArguments, args);
         }
 
-        public string GetEffectiveMergeArguments(IList<string> args)
+        public virtual string GetEffectiveMergeArguments(IList<string> args)
         {
             return ReplaceArgs(MergeArguments, args);
         }
@@ -46,7 +46,6 @@ namespace MergeToolSelector.FileExtensions
                     ret.Append(c);
                     continue;
                 }
-
 
                 i++;
                 // string ends with a $, place this in the result
@@ -86,7 +85,7 @@ namespace MergeToolSelector.FileExtensions
             return ret.ToString();
         }
 
-        public bool IsForExtension(IEnumerable<string> paths)
+        public virtual bool IsForExtension(IEnumerable<string> paths)
         {
             return FileExts != null
                    && paths != null
@@ -95,7 +94,7 @@ namespace MergeToolSelector.FileExtensions
                        .Any(p => FileExts.Any(ext => p.EndsWith(ext, StringComparison.OrdinalIgnoreCase)));
         }
 
-        private static IList<string> PrependPeriods(IList<string> fileExts)
+        protected static IList<string> PrependPeriods(IList<string> fileExts)
         {
             if (fileExts == null || fileExts.Any() == false)
                 return null;
