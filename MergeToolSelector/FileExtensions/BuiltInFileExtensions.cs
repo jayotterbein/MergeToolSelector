@@ -44,7 +44,7 @@ namespace MergeToolSelector.FileExtensions
                     var e2mt = string.Format(@" ""-e2mt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" """"/mergeoutput=#output"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$5: #sourcesymbolic"""" """"/righttitle=$6: #destinationsymbolic"""" """"/outputtitle=$8""""""", beyondCompare);
                     
                     semanticMergeFileExt.DiffArguments = semanticMergeFileExt.DiffArguments + edt;
-                    semanticMergeFileExt.MergeArguments = semanticMergeFileExt.MergeArguments + emt + e2mt;
+                    semanticMergeFileExt.MergeArguments = semanticMergeFileExt.MergeArguments + emt + e2mt + edt.Replace("$3", "$5").Replace("$4", "$6");
                 }
                 yield return semanticMergeFileExt;
             }
