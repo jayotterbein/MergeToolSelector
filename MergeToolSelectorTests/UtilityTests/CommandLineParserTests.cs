@@ -109,6 +109,5 @@ namespace MergeToolSelectorTests.UtilityTests
             fileExt.Verify(x => x.GetEffectiveMergeArguments(args), Times.Once());
             fileExt.Verify(x => x.GetEffectiveDiffArguments(args), Times.Never());
         }
-
     }
 }
