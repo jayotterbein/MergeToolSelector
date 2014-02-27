@@ -24,22 +24,29 @@ namespace MergeToolSelector.Utility
 
         public void Parse(IList<string> args)
         {
-            if (
-                args == null
-                || !args.Any()
-                || args[0].EndsWith("help", StringComparison.OrdinalIgnoreCase)
-                || args[0].EndsWith("?", StringComparison.OrdinalIgnoreCase))
-            {
-                _messageDisplayer.Display("The following are the allowed commands:");
-            }
-            else if (string.Equals(args[0], "diff", StringComparison.OrdinalIgnoreCase))
+            var cmd = GetCommand(args);
+            if (cmd.Equals("diff", StringComparison.Ordinal))
             {
                 Exec((fileExt, a) => fileExt.GetEffectiveDiffArguments(a), args);
             }
-            else if (string.Equals(args[0], "merge", StringComparison.OrdinalIgnoreCase))
+            else if (cmd.Equals("merge", StringComparison.Ordinal))
             {
                 Exec((fileExt, a) => fileExt.GetEffectiveMergeArguments(a), args);
             }
+            else
+            {
+                _messageDisplayer.Display("Help: ");
+            }
+        }
+
+        private static string GetCommand(IList<string> args)
+        {
+            if (args != null && args.Any())
+            {
+                var cmd = (args.First() ?? string.Empty).ToLower();
+                return cmd;
+            }
+            return "help";
         }
 
         private void Exec(Func<FileExtension, IList<string>, string> getEffectiveArgsFunc, IList<string> args)

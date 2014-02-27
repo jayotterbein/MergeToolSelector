@@ -53,7 +53,7 @@ namespace MergeToolSelectorTests.UtilityTests
 
 
         [Test]
-        public void No_diff_or_merge_does_nothing()
+        public void Unrecognized_command_gives_help()
         {
             var processExecMock = new Mock<IProcessExecuter>();
             var messageDisplayer = new Mock<IMessageDisplayer>();
@@ -61,7 +61,7 @@ namespace MergeToolSelectorTests.UtilityTests
             parser.Parse(new[] {"nothing"});
 
             processExecMock.Verify(x => x.Start(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
-            messageDisplayer.Verify(x => x.Display(It.IsAny<string>()), Times.Never());
+            messageDisplayer.Verify(x => x.Display(It.IsAny<string>()), Times.Once());
         }
 
         [Test]
