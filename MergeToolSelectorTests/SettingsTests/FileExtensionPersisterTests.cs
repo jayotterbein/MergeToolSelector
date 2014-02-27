@@ -81,12 +81,14 @@ namespace MergeToolSelectorTests.SettingsTests
                        && string.Equals(x.MergeArguments, y.MergeArguments, StringComparison.Ordinal);
             }
 
-            static private bool StringListEquals(IList<string> list1, IList<string> list2)
+            static private bool StringListEquals(IEnumerable<string> list1, IEnumerable<string> list2)
             {
                 if (list1 == null)
                     return list2 == null;
+                if (list2 == null)
+                    return false;
 
-                return list1.All(list2.Contains) && list2.All(list1.Contains);
+                return list1.SequenceEqual(list2, StringComparer.Ordinal);
             }
 
             public int GetHashCode(FileExtension obj)
