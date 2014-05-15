@@ -4,21 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
-using MergeToolSelector.FileExtensions;
-using MergeToolSelector.Settings;
+using MergeToolSelector.Forms;
+using MergeToolSelector.Utility.FileExtensions;
 
 namespace MergeToolSelector.Utility
 {
     public class CommandLineParser
     {
         private readonly IProcessExecuter _processExecuter;
-        private readonly IMessageDisplayer _messageDisplayer;
+        private readonly IFormDisplayer _formDisplayer;
         private readonly IFileExtensionLocator _fileExtensionLocator;
 
-        public CommandLineParser(IProcessExecuter processExecuter, IMessageDisplayer messageDisplayer, IFileExtensionLocator fileExtensionLocator)
+        public CommandLineParser(IProcessExecuter processExecuter, IFormDisplayer formDisplayer, IFileExtensionLocator fileExtensionLocator)
         {
             _processExecuter = processExecuter;
-            _messageDisplayer = messageDisplayer;
+            _formDisplayer = formDisplayer;
             _fileExtensionLocator = fileExtensionLocator;
         }
 
@@ -27,15 +27,15 @@ namespace MergeToolSelector.Utility
             var cmd = GetCommand(args);
             if (cmd.Equals("diff", StringComparison.Ordinal))
             {
-                Exec((fileExt, a) => fileExt.GetEffectiveDiffArguments(a), args);
+                Exec(fileExt => fileExt.GetEffectiveDiffArguments(args), args);
             }
             else if (cmd.Equals("merge", StringComparison.Ordinal))
             {
-                Exec((fileExt, a) => fileExt.GetEffectiveMergeArguments(a), args);
+                Exec(fileExt => fileExt.GetEffectiveMergeArguments(args), args);
             }
             else
             {
-                _messageDisplayer.Display("Help: ");
+                _formDisplayer.Display(new Main());
             }
         }
 
@@ -49,10 +49,10 @@ namespace MergeToolSelector.Utility
             return "help";
         }
 
-        private void Exec(Func<FileExtension, IList<string>, string> getEffectiveArgsFunc, IList<string> args)
+        private void Exec(Func<FileExtension, string> getEffectiveArgsFunc, IList<string> args)
         {
             var fileEx = _fileExtensionLocator.GetFileExtension(args);
-            var cmdlineArg = getEffectiveArgsFunc(fileEx, args);
+            var cmdlineArg = getEffectiveArgsFunc(fileEx);
             _processExecuter.Start(fileEx.Command, cmdlineArg);
         }
     }

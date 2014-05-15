@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using MergeToolSelector.FileExtensions;
+using MergeToolSelector.Utility.FileExtensions;
 
-namespace MergeToolSelector.Settings
+namespace MergeToolSelector.Utility.Settings
 {
     public interface IFileExtensionPersister
     {

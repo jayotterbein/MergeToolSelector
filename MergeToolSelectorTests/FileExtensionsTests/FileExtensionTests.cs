@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MergeToolSelector.FileExtensions;
+using MergeToolSelector.Utility.FileExtensions;
 using NUnit.Framework;
 
 namespace MergeToolSelectorTests.FileExtensionsTests

@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MergeToolSelector.Settings;
-using Newtonsoft.Json;
+using MergeToolSelector.Utility.Settings;
 
-namespace MergeToolSelector.FileExtensions
+namespace MergeToolSelector.Utility.FileExtensions
 {
     public class BuiltInFileExtensions : IFileExtensionPersister
     {

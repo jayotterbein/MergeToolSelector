@@ -4,9 +4,9 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using MergeToolSelector.FileExtensions;
-using MergeToolSelector.Settings;
+using System.Windows.Forms;
 using MergeToolSelector.Utility;
+using MergeToolSelector.Utility.FileExtensions;
 using Moq;
 using NUnit.Framework;
 
@@ -19,36 +19,36 @@ namespace MergeToolSelectorTests.UtilityTests
         public void No_args_displays_help()
         {
             var processExecMock = new Mock<IProcessExecuter>();
-            var messageDisplayer = new Mock<IMessageDisplayer>();
-            var parser = new CommandLineParser(processExecMock.Object, messageDisplayer.Object, Mock.Of<IFileExtensionLocator>());
+            var formDisplayer = new Mock<IFormDisplayer>();
+            var parser = new CommandLineParser(processExecMock.Object, formDisplayer.Object, Mock.Of<IFileExtensionLocator>());
             parser.Parse(new string[] {});
 
             processExecMock.Verify(x => x.Start(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
-            messageDisplayer.Verify(x => x.Display(It.IsAny<string>()), Times.Exactly(1));
+            formDisplayer.Verify(x => x.Display(It.IsAny<Form>()), Times.Exactly(1));
         }
 
         [Test]
         public void Help_arg_displays_help()
         {
             var processExecMock = new Mock<IProcessExecuter>();
-            var messageDisplayer = new Mock<IMessageDisplayer>();
-            var parser = new CommandLineParser(processExecMock.Object, messageDisplayer.Object, Mock.Of<IFileExtensionLocator>());
+            var formDisplayer = new Mock<IFormDisplayer>();
+            var parser = new CommandLineParser(processExecMock.Object, formDisplayer.Object, Mock.Of<IFileExtensionLocator>());
             parser.Parse(new[] {"hElp"});
 
             processExecMock.Verify(x => x.Start(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
-            messageDisplayer.Verify(x => x.Display(It.IsAny<string>()), Times.Exactly(1));
+            formDisplayer.Verify(x => x.Display(It.IsAny<Form>()), Times.Exactly(1));
         }
 
         [Test]
         public void Question_arg_displays_help()
         {
             var processExecMock = new Mock<IProcessExecuter>();
-            var messageDisplayer = new Mock<IMessageDisplayer>();
-            var parser = new CommandLineParser(processExecMock.Object, messageDisplayer.Object, Mock.Of<IFileExtensionLocator>());
+            var formDisplayer = new Mock<IFormDisplayer>();
+            var parser = new CommandLineParser(processExecMock.Object, formDisplayer.Object, Mock.Of<IFileExtensionLocator>());
             parser.Parse(new[] {"?"});
 
             processExecMock.Verify(x => x.Start(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
-            messageDisplayer.Verify(x => x.Display(It.IsAny<string>()), Times.Exactly(1));
+            formDisplayer.Verify(x => x.Display(It.IsAny<Form>()), Times.Exactly(1));
         }
 
 
@@ -56,12 +56,12 @@ namespace MergeToolSelectorTests.UtilityTests
         public void Unrecognized_command_gives_help()
         {
             var processExecMock = new Mock<IProcessExecuter>();
-            var messageDisplayer = new Mock<IMessageDisplayer>();
-            var parser = new CommandLineParser(processExecMock.Object, messageDisplayer.Object, Mock.Of<IFileExtensionLocator>());
+            var formDisplayer = new Mock<IFormDisplayer>();
+            var parser = new CommandLineParser(processExecMock.Object, formDisplayer.Object, Mock.Of<IFileExtensionLocator>());
             parser.Parse(new[] {"nothing"});
 
             processExecMock.Verify(x => x.Start(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
-            messageDisplayer.Verify(x => x.Display(It.IsAny<string>()), Times.Once());
+            formDisplayer.Verify(x => x.Display(It.IsAny<Form>()), Times.Once());
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace MergeToolSelectorTests.UtilityTests
             fileExtLocator.Setup(x => x.GetFileExtension(It.IsAny<IList<string>>())).Returns(fileExt.Object);
 
             var processExecMock = new Mock<IProcessExecuter>();
-            var parser = new CommandLineParser(processExecMock.Object, Mock.Of<IMessageDisplayer>(), fileExtLocator.Object);
+            var parser = new CommandLineParser(processExecMock.Object, Mock.Of<IFormDisplayer>(), fileExtLocator.Object);
             parser.Parse(args);
 
 
@@ -101,7 +101,7 @@ namespace MergeToolSelectorTests.UtilityTests
             fileExtLocator.Setup(x => x.GetFileExtension(It.IsAny<IList<string>>())).Returns(fileExt.Object);
 
             var processExecMock = new Mock<IProcessExecuter>();
-            var parser = new CommandLineParser(processExecMock.Object, Mock.Of<IMessageDisplayer>(), fileExtLocator.Object);
+            var parser = new CommandLineParser(processExecMock.Object, Mock.Of<IFormDisplayer>(), fileExtLocator.Object);
             parser.Parse(args);
 
 

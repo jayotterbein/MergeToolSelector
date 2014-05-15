@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MergeToolSelector.FileExtensions;
+using MergeToolSelector.Utility.FileExtensions;
 using Newtonsoft.Json.Linq;
 using NLog;
 
-namespace MergeToolSelector.Settings
+namespace MergeToolSelector.Utility.Settings
 {
     public class FileExtensionPersister : IFileExtensionPersister
     {

@@ -5,8 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using MergeToolSelector.FileExtensions;
-using MergeToolSelector.Settings;
+using MergeToolSelector.Utility.FileExtensions;
+using MergeToolSelector.Utility.Settings;
 using Moq;
 using NUnit.Framework;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MergeToolSelector.FileExtensions
+namespace MergeToolSelector.Utility.FileExtensions
 {
     public interface IFileExtensionLocator
     {

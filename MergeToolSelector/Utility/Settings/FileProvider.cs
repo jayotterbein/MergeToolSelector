@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using NLog;
 
-namespace MergeToolSelector.Settings
+namespace MergeToolSelector.Utility.Settings
 {
     public class FileProvider : IFileProvider
     {

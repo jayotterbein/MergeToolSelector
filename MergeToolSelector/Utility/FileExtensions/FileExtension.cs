@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
-namespace MergeToolSelector.FileExtensions
+namespace MergeToolSelector.Utility.FileExtensions
 {
     public class FileExtension
     {
@@ -100,8 +98,9 @@ namespace MergeToolSelector.FileExtensions
                 return null;
 
             return fileExts
-                .Where(x => !string.IsNullOrEmpty(x))
-                .Select(fileExt => (fileExt[0] == '.') ? fileExt : "." + fileExt)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim())
+                .Select(x => (x[0] == '.') ? x : "." + x)
                 .ToArray();
         }
 
