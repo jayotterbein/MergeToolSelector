@@ -27,7 +27,7 @@ namespace MergeToolSelector.Forms
                 Command = _commandTextbox.Text,
                 DiffArguments = _diffArgTextbox.Text,
                 MergeArguments = _mergeArgTextbox.Text,
-                FileExts = _extTextbox.Text.Split(new[] {" "}, StringSplitOptions.RemoveEmptyEntries),
+                FileExts = _extTextbox.Text.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries),
             };
         }
 
