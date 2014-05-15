@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using MergeToolSelector.Utility.FileExtensions;
 
 namespace MergeToolSelector.Forms
 {
@@ -9,6 +10,25 @@ namespace MergeToolSelector.Forms
         public FileExtensionAdder()
         {
             InitializeComponent();
+        }
+
+        public void PopulateFrom(FileExtension fileExtension)
+        {
+            _commandTextbox.Text = fileExtension.Command;
+            _extTextbox.Text = string.Join(" ", fileExtension.FileExts);
+            _diffArgTextbox.Text = fileExtension.DiffArguments;
+            _mergeArgTextbox.Text = fileExtension.MergeArguments;
+        }
+
+        public FileExtension GetFileExtension()
+        {
+            return new FileExtension
+            {
+                Command = _commandTextbox.Text,
+                DiffArguments = _diffArgTextbox.Text,
+                MergeArguments = _mergeArgTextbox.Text,
+                FileExts = _extTextbox.Text.Split(new[] {" "}, StringSplitOptions.RemoveEmptyEntries),
+            };
         }
 
         private void _commandButton_Click(object sender, EventArgs e)
