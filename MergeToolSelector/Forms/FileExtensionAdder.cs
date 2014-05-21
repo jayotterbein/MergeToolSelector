@@ -39,7 +39,7 @@ namespace MergeToolSelector.Forms
                 dialog.Multiselect = false;
                 dialog.AutoUpgradeEnabled = true;
                 dialog.FilterIndex = 0;
-                dialog.Filter = "Executable Files (exe, com, bat)|*.exe;*.com;*.bat|All Files (*.*);*.*|";
+                dialog.Filter = "Executable Files (exe, com, bat, cmd)|*.exe;*.com;*.bat;*.cmd|All Files (*.*);*.*|";
                 dialog.ShowReadOnly = false;
                 dialog.Title = "Select the merge/diff tool";
 
