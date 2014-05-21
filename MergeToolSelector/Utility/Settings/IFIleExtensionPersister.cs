@@ -6,5 +6,6 @@ namespace MergeToolSelector.Utility.Settings
     public interface IFileExtensionPersister
     {
         IList<FileExtension> LoadFileExtensions();
+        void SaveFileExtensions(params FileExtension[] fileExtensions);
     }
 }

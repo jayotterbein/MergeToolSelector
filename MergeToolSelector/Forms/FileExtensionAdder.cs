@@ -7,6 +7,8 @@ namespace MergeToolSelector.Forms
 {
     public partial class FileExtensionAdder : Form
     {
+        private Guid _id;
+
         public FileExtensionAdder()
         {
             InitializeComponent();
@@ -14,6 +16,7 @@ namespace MergeToolSelector.Forms
 
         public void PopulateFrom(FileExtension fileExtension)
         {
+            _id = fileExtension.Id;
             _commandTextbox.Text = fileExtension.Command;
             _extTextbox.Text = string.Join(" ", fileExtension.FileExts);
             _diffArgTextbox.Text = fileExtension.DiffArguments;
@@ -24,10 +27,11 @@ namespace MergeToolSelector.Forms
         {
             return new FileExtension
             {
+                Id = _id,
                 Command = _commandTextbox.Text,
                 DiffArguments = _diffArgTextbox.Text,
                 MergeArguments = _mergeArgTextbox.Text,
-                FileExts = _extTextbox.Text.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries),
+                FileExts = _extTextbox.Text.Split(new[] { " ", ",", ";" }, StringSplitOptions.RemoveEmptyEntries),
             };
         }
 

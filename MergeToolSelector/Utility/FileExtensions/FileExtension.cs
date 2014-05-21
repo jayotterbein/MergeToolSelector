@@ -11,6 +11,8 @@ namespace MergeToolSelector.Utility.FileExtensions
     {
         private IList<string> _fileExts;
 
+        public virtual Guid Id { get; set; }
+
         public virtual IList<string> FileExts
         {
             get { return _fileExts; }

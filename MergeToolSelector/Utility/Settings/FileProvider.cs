@@ -25,8 +25,8 @@ namespace MergeToolSelector.Utility.Settings
             _logger.Trace("INI: " + file);
 
             return (!File.Exists(file))
-                ? null
-                : new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+                ? new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read)
+                : new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
         }
     }
 }

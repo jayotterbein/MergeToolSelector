@@ -8,13 +8,15 @@ using MergeToolSelector.Utility.FileExtensions;
 using MergeToolSelector.Utility.Settings;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace MergeToolSelectorTests.SettingsTests
 {
     [TestFixture]
-    public class FileExtensionPersisterTests
+    public class FileExtensionPersisterTests : FileExtensionPersister
     {
+        public FileExtensionPersisterTests() : base(null)
+        {
+        }
 
         [Test]
         public void Parses_diff_and_merge_lines()
@@ -30,7 +32,7 @@ namespace MergeToolSelectorTests.SettingsTests
                         MergeArguments = @"merge command line",
                     },
                 };
-            
+
             var fileProvider = new Mock<IFileProvider>();
             fileProvider.Setup(x => x.GetFileExtensionsFile()).Returns(GetResource());
 
@@ -48,7 +50,7 @@ namespace MergeToolSelectorTests.SettingsTests
             var fileExtensionPersister = new FileExtensionPersister(fileProvider.Object);
             var obtainedFileExtensions = fileExtensionPersister.LoadFileExtensions();
             Assert.That(obtainedFileExtensions, Has.Count.EqualTo(1));
-            Assert.That(obtainedFileExtensions[0], Has.Property("FileExts").EquivalentTo(new[] {".cs", ".other"}).Using((IComparer) StringComparer.OrdinalIgnoreCase));
+            Assert.That(obtainedFileExtensions[0], Has.Property("FileExts").EquivalentTo(new[] { ".cs", ".other" }).Using((IComparer)StringComparer.OrdinalIgnoreCase));
         }
 
         [Test]
@@ -63,11 +65,125 @@ namespace MergeToolSelectorTests.SettingsTests
             Assert.That(obtainedFileExtensions[0], Has.Property("FileExts").EquivalentTo(new[] { ".cs", ".hasdot" }).Using((IComparer)StringComparer.OrdinalIgnoreCase));
         }
 
+        [Test]
+        public void Saved_extensions_can_be_reloaded()
+        {
+            var fileExt = new FileExtension
+            {
+                Id = Guid.Empty,
+                Command = "command",
+                DiffArguments = "diff",
+                MergeArguments = "merge",
+                FileExts = new[] {".ext"}
+            };
+
+            var file = Path.GetTempFileName();
+            try
+            {
+                using (var stream = new FileStream(file, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+                {
+                    var fileProvider = new Mock<IFileProvider>();
+                    fileProvider.Setup(x => x.GetFileExtensionsFile()).Returns(stream);
+                    var fileExtPersister = new FileExtensionPersister(fileProvider.Object);
+                    
+                    fileExtPersister.SaveFileExtensions(new [] { fileExt });
+                }
+                using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    var fileProvider = new Mock<IFileProvider>();
+                    fileProvider.Setup(x => x.GetFileExtensionsFile()).Returns(stream);
+                    var fileExtPersister = new FileExtensionPersister(fileProvider.Object);
+
+                    var loadedFileExt = fileExtPersister.LoadFileExtensions();
+                    Assert.That(loadedFileExt[0], Is.EqualTo(fileExt).Using(new FileExtensionEqualityComparer()));
+                }
+
+            }
+            finally
+            {
+                if (File.Exists(file))
+                    File.Delete(file);
+            }
+        }
+
+        [Test]
+        public void MergeFileExtTest()
+        {
+            var currentFileExt = new[]
+            {
+                new FileExtension
+                {
+                    Id = Guid.Parse("138bca89-84a3-42f0-a33b-28cc3754578e"),
+                    Command = "current command - unchanged",
+                    DiffArguments = "diff args - unchanged",
+                    MergeArguments = "merge args - unchanged",
+                    FileExts = new[] {".js"}
+                },
+                new FileExtension
+                {
+                    Id = Guid.Parse("966b5a93-03b6-4923-8026-3b7c3ca4a318"),
+                    Command = "current command - to change",
+                    DiffArguments = "current command - to change",
+                    MergeArguments = "current command - to change",
+                    FileExts = new[] {".cs"}
+                }
+            };
+            var newFileExt = new[]
+            {
+                new FileExtension
+                {
+                    Id = Guid.Parse("198a0d31-8d45-42f6-9367-185f8fee325a"),
+                    Command = "new command - not replacing",
+                    DiffArguments = "new command - not replacing",
+                    MergeArguments = "new command - not replacing",
+                    FileExts = new[] {".txt"}
+                },
+                new FileExtension
+                {
+                    Id = Guid.Parse("966b5a93-03b6-4923-8026-3b7c3ca4a318"),
+                    Command = "changed command",
+                    DiffArguments = "changed command",
+                    MergeArguments = "changed command",
+                    FileExts = new[] {".cs", ".c", ".cpp"}
+                }
+            };
+
+            var expectedFileExt = new[]
+            {
+                new FileExtension
+                {
+                    Id = Guid.Parse("138bca89-84a3-42f0-a33b-28cc3754578e"),
+                    Command = "current command - unchanged",
+                    DiffArguments = "diff args - unchanged",
+                    MergeArguments = "merge args - unchanged",
+                    FileExts = new[] {".js"}
+                },
+                new FileExtension
+                {
+                    Id = Guid.Parse("198a0d31-8d45-42f6-9367-185f8fee325a"),
+                    Command = "new command - not replacing",
+                    DiffArguments = "new command - not replacing",
+                    MergeArguments = "new command - not replacing",
+                    FileExts = new[] {".txt"}
+                },
+                new FileExtension
+                {
+                    Id = Guid.Parse("966b5a93-03b6-4923-8026-3b7c3ca4a318"),
+                    Command = "changed command",
+                    DiffArguments = "changed command",
+                    MergeArguments = "changed command",
+                    FileExts = new[] {".cs", ".c", ".cpp"}
+                }
+            };
+
+            var mergedFileExt = MergeFileExtensions(currentFileExt, newFileExt);
+            Assert.That(mergedFileExt.OrderBy(x => x.Id), Is.EquivalentTo(expectedFileExt.OrderBy(x => x.Id)).Using(new FileExtensionEqualityComparer()));
+        }
 
         private static Stream GetResource([CallerMemberName]string resourceName = "")
         {
-            var fullName = string.Format(@"{0}.{1}.json", typeof (FileExtensionPersisterTests).Namespace, resourceName);
-            var resourceStream = typeof (FileExtensionPersisterTests).Assembly.GetManifestResourceStream(fullName);
+            var fullName = string.Format(@"{0}.{1}.json", typeof(FileExtensionPersisterTests).Namespace, resourceName);
+            var resourceStream = typeof(FileExtensionPersisterTests).Assembly.GetManifestResourceStream(fullName);
             return resourceStream;
         }
 

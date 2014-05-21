@@ -39,6 +39,7 @@
             this._addToolButton.TabIndex = 0;
             this._addToolButton.Text = "Add New";
             this._addToolButton.UseVisualStyleBackColor = true;
+            this._addToolButton.Click += new System.EventHandler(this._addToolButton_Click);
             // 
             // Main
             // 

@@ -51,5 +51,10 @@ namespace MergeToolSelector.Utility.FileExtensions
         {
             return GetDefaultFileExtensions().ToArray();
         }
+
+        public void SaveFileExtensions(params FileExtension[] fileExtensions)
+        {
+            throw new NotImplementedException("Cannot save file extensions to the built-in provider");
+        }
     }
 }
