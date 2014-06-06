@@ -12,3 +12,26 @@ and/or Semantic Merge in their default install locations on Windows.
 
 Consider it pre-alpha, and I'm uploading here as a storage area while
 I build it.
+
+
+###Usage in Git
+```
+[difftool "mts"]
+  cmd = 'C:/Dev/MergeToolSelector/MergeToolSelector/bin/Debug/MergeToolSelector.exe' diff $LOCAL $REMOTE
+  trustExitCode = true
+
+[mergetool "mts"]
+  cmd = 'C:/Dev/MergeToolSelector/MergeToolSelector/bin/Debug/MergeToolSelector.exe' merge $LOCAL $REMOTE $BASE $MERGED
+  trustExitCode = true
+```
+
+###Usage in SourceTree
+```
+External Diff Tool: Custom
+Diff Command: <point to exe>
+Arguments: diff $LOCAL $REMOTE
+
+External Merge Tool: Custom
+Diff Command: <point to exe>
+Arguments: merge $LOCAL $REMOTE $BASE $MERGED
+```
