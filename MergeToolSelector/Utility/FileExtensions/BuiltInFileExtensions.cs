@@ -31,7 +31,7 @@ namespace MergeToolSelector.Utility.FileExtensions
                                                FileExts = new [] { "cs", "vb", "java", "dpj", "c", "h" },
                                                Command = semanticMerge,
                                                DiffArguments = @"""-sn=$3"" ""-dn=$4"" ""-s=$1"" ""-d=$2""",
-                                               MergeArguments = @"""-d=$2"" ""-b=$1"" ""-s=$3"" ""-r=$4"" ""-dn=$6"" ""-sn=$5"" ""-bn=$7""",
+                                               MergeArguments = @"""-s=$1"" ""-d=$2"" ""-b=$3"" ""-r=$4"" ""-sn=$5"" ""-dn=$6"" ""-bn=$7""",
                                            };
                 // if beyond compare exists, use it as a default text diff/merge within semantic merge
                 if (File.Exists(beyondCompare))
