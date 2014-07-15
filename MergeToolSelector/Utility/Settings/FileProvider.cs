@@ -8,7 +8,7 @@ namespace MergeToolSelector.Utility.Settings
     {
         private readonly Logger _logger;
         private readonly string _settingsFolderPath;
-        
+
         public FileProvider()
         {
             _logger = LogManager.GetCurrentClassLogger();
@@ -21,12 +21,14 @@ namespace MergeToolSelector.Utility.Settings
 
         public Stream GetFileExtensionsFile()
         {
+            if (!Directory.Exists(_settingsFolderPath))
+            {
+                Directory.CreateDirectory(_settingsFolderPath);
+            }
             var file = Path.Combine(_settingsFolderPath, "FileExtensions.json");
             _logger.Trace("INI: " + file);
 
-            return (!File.Exists(file))
-                ? new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read)
-                : new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+            return new FileStream(file, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
         }
     }
 }
