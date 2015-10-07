@@ -8,9 +8,9 @@ namespace MergeToolSelector.Utility
 {
     public class CommandLineParser
     {
-        private readonly IProcessExecuter _processExecuter;
-        private readonly IFormDisplayer _formDisplayer;
         private readonly IFileExtensionLocator _fileExtensionLocator;
+        private readonly IFormDisplayer _formDisplayer;
+        private readonly IProcessExecuter _processExecuter;
 
         public CommandLineParser(IProcessExecuter processExecuter, IFormDisplayer formDisplayer, IFileExtensionLocator fileExtensionLocator)
         {

@@ -10,6 +10,15 @@ namespace MergeToolSelector.Utility.FileExtensions
     {
         private static IEnumerable<FileExtension> GetDefaultFileExtensions()
         {
+            // for feature.cs files, ignore the result
+            yield return new FileExtension
+            {
+                FileExts = new[] {"feature.cs"},
+                Command = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "cmd.exe"),
+                DiffArguments = "/c exit 0",
+                MergeArguments = "/c exit 0",
+            };
+
             // if beyond compare exists, use it as a default fallback
             var beyondCompare3 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Beyond Compare 3", "BComp.exe");
             var beyondCompare4 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Beyond Compare 4", "BComp.exe");

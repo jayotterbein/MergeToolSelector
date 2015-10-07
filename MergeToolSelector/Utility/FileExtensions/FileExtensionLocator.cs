@@ -20,7 +20,6 @@ namespace MergeToolSelector.Utility.FileExtensions
         {
             var savedExtensions = _fileExtensionPersister
                 .LoadFileExtensions()
-                .Where(x => File.Exists(x.Command))
                 .ToArray();
 
             // match saved file extensions that exactly line up with one of the given extensions
@@ -34,7 +33,7 @@ namespace MergeToolSelector.Utility.FileExtensions
                 return matchingExtension;
 
             // match any built in extensions, using the same rules
-            var builtInExtensions = _builtInFileExtensionPersister.LoadFileExtensions().Where(x => File.Exists(x.Command)).ToArray();
+            var builtInExtensions = _builtInFileExtensionPersister.LoadFileExtensions().ToArray();
             return builtInExtensions.FirstOrDefault(x => x.IsForExtension(paths)) ?? builtInExtensions.FirstOrDefault(x => x.FileExts == null);
         }
     }
