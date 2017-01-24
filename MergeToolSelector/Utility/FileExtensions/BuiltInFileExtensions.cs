@@ -20,10 +20,16 @@ namespace MergeToolSelector.Utility.FileExtensions
             };
 
             // if beyond compare exists, use it as a default fallback
-            var beyondCompare3 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Beyond Compare 3", "BComp.exe");
-            var beyondCompare4 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Beyond Compare 4", "BComp.exe");
-            var beyondCompare = (File.Exists(beyondCompare4)) ? beyondCompare4 : beyondCompare3;
-            if (File.Exists(beyondCompare))
+            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            var beyondCompares = new[]
+            {
+                Path.Combine(programFiles, "Beyond Compare 4", "BComp.exe"),
+                Path.Combine(programFilesX86, "Beyond Compare 4", "BComp.exe"),
+                Path.Combine(programFilesX86, "Beyond Compare 3", "BComp.exe"),
+            };
+            var beyondCompare = beyondCompares.FirstOrDefault(File.Exists);
+            if (beyondCompare != null)
             {
                 yield return new FileExtension
                              {
