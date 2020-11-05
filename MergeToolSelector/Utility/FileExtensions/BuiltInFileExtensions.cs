@@ -22,6 +22,13 @@ namespace MergeToolSelector.Utility.FileExtensions
             _logger.Trace($"{caller}:{lineNo} - {message}");
         }
 
+        private IEnumerable<string> GetProgramFilesSearchPaths()
+        {
+            yield return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            yield return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            yield return Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Program Files");
+        }
+
         private IEnumerable<FileExtension> GetDefaultFileExtensions()
         {
             Trace("Ignoring diffs for .feature.cs files; they are automatically generated");
@@ -35,27 +42,28 @@ namespace MergeToolSelector.Utility.FileExtensions
             };
 
             // if beyond compare exists, use it as a default fallback
-            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
             var beyondCompares = new[]
             {
-                Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Program Files", "Beyond Compare 4", "BComp.exe"),
-                Path.Combine(programFiles, "Beyond Compare 4", "BComp.exe"),
-                Path.Combine(programFilesX86, "Beyond Compare 4", "BComp.exe"),
-                Path.Combine(programFilesX86, "Beyond Compare 3", "BComp.exe"),
+                "Beyond Compare 4",
+                "Beyond Compare 3",
             };
             Trace("Checking for beyond compare");
             string beyondCompare = null;
-            foreach (var bc in beyondCompares)
+            foreach (var searchPath in GetProgramFilesSearchPaths())
             {
-                Trace($"Checking for beyond compare at {bc}");
-                if (File.Exists(bc))
+                foreach (var bcPath in beyondCompares)
                 {
-                    Trace($"Found at {bc}");
-                    beyondCompare = bc;
-                    break;
+                    var bc = Path.Combine(searchPath, bcPath, "BComp.exe");
+                    Trace($"Checking for beyond compare at {bc}");
+                    if (File.Exists(bc))
+                    {
+                        Trace($"Found at {bc}");
+                        beyondCompare = bc;
+                        break;
+                    }
                 }
             }
+
             if (beyondCompare != null)
             {
                 Trace($"Found beyond compare: {beyondCompare}");
@@ -68,8 +76,15 @@ namespace MergeToolSelector.Utility.FileExtensions
             }
 
             // if semantic merge exists, use it for as a default for the known languages
-            var semanticMerge = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PlasticSCM4", "semanticmerge", "semanticmergetool.exe");
+            var semanticMergeSearchPaths = new[]
+            {
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PlasticSCM4",
+                    "semanticmerge", "semanticmergetool.exe"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "semanticmerge", "semanticmergetool.exe"),
+            };
             Trace("Checking for semantic merge");
+            var semanticMerge = semanticMergeSearchPaths.FirstOrDefault(File.Exists);
             if (File.Exists(semanticMerge))
             {
                 Trace($"Found semantic merge: {semanticMerge}");
