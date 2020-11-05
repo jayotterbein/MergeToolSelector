@@ -2,14 +2,29 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using MergeToolSelector.Utility.Settings;
+using NLog;
 
 namespace MergeToolSelector.Utility.FileExtensions
 {
     public class BuiltInFileExtensions : IFileExtensionPersister
     {
-        private static IEnumerable<FileExtension> GetDefaultFileExtensions()
+        private readonly Logger _logger;
+
+        public BuiltInFileExtensions()
         {
+            _logger = LogManager.GetCurrentClassLogger();
+        }
+
+        private void Trace(string message, [CallerMemberName] string caller = null, [CallerLineNumber] int lineNo = 0)
+        {
+            _logger.Trace($"{caller}:{lineNo} - {message}");
+        }
+
+        private IEnumerable<FileExtension> GetDefaultFileExtensions()
+        {
+            Trace("Ignoring diffs for .feature.cs files; they are automatically generated");
             // for feature.cs files, ignore the result
             yield return new FileExtension
             {
@@ -24,13 +39,26 @@ namespace MergeToolSelector.Utility.FileExtensions
             var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
             var beyondCompares = new[]
             {
+                Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Program Files", "Beyond Compare 4", "BComp.exe"),
                 Path.Combine(programFiles, "Beyond Compare 4", "BComp.exe"),
                 Path.Combine(programFilesX86, "Beyond Compare 4", "BComp.exe"),
                 Path.Combine(programFilesX86, "Beyond Compare 3", "BComp.exe"),
             };
-            var beyondCompare = beyondCompares.FirstOrDefault(File.Exists);
+            Trace("Checking for beyond compare");
+            string beyondCompare = null;
+            foreach (var bc in beyondCompares)
+            {
+                Trace($"Checking for beyond compare at {bc}");
+                if (File.Exists(bc))
+                {
+                    Trace($"Found at {bc}");
+                    beyondCompare = bc;
+                    break;
+                }
+            }
             if (beyondCompare != null)
             {
+                Trace($"Found beyond compare: {beyondCompare}");
                 yield return new FileExtension
                              {
                                  Command = beyondCompare,
@@ -41,8 +69,10 @@ namespace MergeToolSelector.Utility.FileExtensions
 
             // if semantic merge exists, use it for as a default for the known languages
             var semanticMerge = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PlasticSCM4", "semanticmerge", "semanticmergetool.exe");
+            Trace("Checking for semantic merge");
             if (File.Exists(semanticMerge))
             {
+                Trace($"Found semantic merge: {semanticMerge}");
                 var semanticMergeFileExt = new FileExtension
                                            {
                                                FileExts = new [] { "cs", "vb", "java", "dpj", "c", "h" },
@@ -53,6 +83,7 @@ namespace MergeToolSelector.Utility.FileExtensions
                 // if beyond compare exists, use it as a default text diff/merge within semantic merge
                 if (File.Exists(beyondCompare))
                 {
+                    Trace("Adding beyond compare to semantic merge");
                     var edt = string.Format(@" ""-edt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$3: #sourcesymbolic"""" """"/righttitle=$4: #destinationsymbolic""""""", beyondCompare);
                     var emt = string.Format(@" ""-emt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" """"#basefile"""" """"#output"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$5: #sourcesymbolic"""" """"/righttitle=$6: #destinationsymbolic"""" """"/centertitle=$7"""" """"/outputtitle=$8""""""", beyondCompare);
                     var e2mt = string.Format(@" ""-e2mt=""""{0}"""" """"#sourcefile"""" """"#destinationfile"""" """"/mergeoutput=#output"""" /nobackups /leftreadonly /rightreadonly /solo """"/lefttitle=$5: #sourcesymbolic"""" """"/righttitle=$6: #destinationsymbolic"""" """"/outputtitle=$8""""""", beyondCompare);
@@ -66,7 +97,9 @@ namespace MergeToolSelector.Utility.FileExtensions
 
         public IList<FileExtension> LoadFileExtensions()
         {
-            return GetDefaultFileExtensions().ToArray();
+            var result = GetDefaultFileExtensions().ToList();
+            Trace($"Found {result.Count} default extension options");
+            return result;
         }
 
         public void SaveFileExtensions(params FileExtension[] fileExtensions)
